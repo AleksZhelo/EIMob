@@ -30,3 +30,21 @@ fun StreamOutput.writeUInt(value: UInt, byteOrder: ByteOrder = defaultByteOrder)
 @ExperimentalUnsignedTypes
 fun ByteArray.binaryStream(size: Int = this.size, offset: Int = 0, readonly: Boolean = true) =
     StreamByteArea(ByteArea(this, size, offset), readOnly = readonly)
+
+fun intToByteArray(value: Int): ByteArray {
+    return when (nativeByteOrder) {
+        ByteOrder.Unknown -> throw UnsupportedOperationException()
+        ByteOrder.LittleEndian -> byteArrayOf(
+            value.toByte(),
+            (value ushr 8).toByte(),
+            (value ushr 16).toByte(),
+            (value ushr 24).toByte()
+        )
+        ByteOrder.BigEndian -> byteArrayOf(
+            (value ushr 24).toByte(),
+            (value ushr 16).toByte(),
+            (value ushr 8).toByte(),
+            value.toByte()
+        )
+    }
+}

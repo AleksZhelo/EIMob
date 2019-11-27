@@ -18,6 +18,10 @@ fun Array<String>.totalLength(): Int = this.fold(0, { acc, x -> acc + x.length }
 fun Array<String>.mobEntrySize(): Int = Int.SIZE_BYTES + entryHeaderSize * size + totalLength()
 fun Array<Float2>.mobEntrySize(): Int = Int.SIZE_BYTES + size * 8
 fun Array<Float3>.mobEntrySize(): Int = Int.SIZE_BYTES + size * 12
+@ExperimentalUnsignedTypes
+fun String.encodeMobString() = this.toByteArray(eiCharset)
+@ExperimentalUnsignedTypes
+fun ByteArray.decodeMobString() = this.toString(eiCharset)
 
 @ExperimentalUnsignedTypes
 fun testSignature(signature: UInt, expectedSignature: UInt, errorMessage: String) {
@@ -67,7 +71,7 @@ private fun StreamInput.readMobEntryChecked(expectedSignature: UInt, errorMessag
 
 @ExperimentalUnsignedTypes
 fun StreamInput.readMobString(expectedSignature: UInt, errorMessage: String): String =
-    readMobEntryChecked(expectedSignature, errorMessage).toString(eiCharset)
+    readMobEntryChecked(expectedSignature, errorMessage).decodeMobString()
 
 @ExperimentalUnsignedTypes
 fun StreamInput.readMobFloat(expectedSignature: UInt, errorMessage: String): Float =
@@ -195,7 +199,7 @@ fun StreamInput.readMobLeverStats(expectedSignature: UInt, errorMessage: String)
 
 @ExperimentalUnsignedTypes
 fun StreamOutput.writeMobString(signature: UInt, value: String) {
-    val valueBytes = value.toByteArray(eiCharset)
+    val valueBytes = value.encodeMobString()
     writeMobEntryHeader(signature, entryHeaderSize + valueBytes.size)
     if (valueBytes.isNotEmpty()) {
         writeBytes(valueBytes)

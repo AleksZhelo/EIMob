@@ -1,10 +1,12 @@
 package com.alekseyzhelo.eimob.blocks
 
-import com.alekseyzhelo.eimob.MobFile.Companion.eiCharset
 import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_SCRIPT
 import com.alekseyzhelo.eimob.entryHeaderSize
+import com.alekseyzhelo.eimob.encodeMobString
+import com.alekseyzhelo.eimob.decodeMobString
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.intToByteArray
 import loggersoft.kotlin.streams.StreamOutput
 import kotlin.experimental.xor
 
@@ -34,11 +36,11 @@ class EncryptedScriptBlock(
     }
 
     private fun decryptScript(data: ByteArray, fromIndex: Int = 0): String {
-        return crypt(data, fromIndex).toString(eiCharset)
+        return crypt(data, fromIndex).decodeMobString()
     }
 
     private fun encryptScript(scriptText: String): ByteArray {
-        return crypt(scriptText.toByteArray(eiCharset))
+        return crypt(scriptText.encodeMobString())
     }
 
     private fun crypt(data: ByteArray, fromIndex: Int = 0): ByteArray {
@@ -50,5 +52,9 @@ class EncryptedScriptBlock(
             result[i] = result[i] xor ((key shr 16).toByte())
         }
         return result
+    }
+
+    companion object {
+        fun createWithKey(key: Int) = EncryptedScriptBlock(intToByteArray(key))
     }
 }

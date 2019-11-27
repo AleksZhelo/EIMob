@@ -1,8 +1,7 @@
 package com.alekseyzhelo.eimob
 
-import com.alekseyzhelo.eimob.blocks.Block
+import com.alekseyzhelo.eimob.blocks.*
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_AIGRAPH
-import com.alekseyzhelo.eimob.blocks.ScriptBlock
 import com.alekseyzhelo.eimob.util.FileNameUtils
 import com.alekseyzhelo.eimob.util.LoggerDelegate
 import com.alekseyzhelo.eimob.util.readUInt
@@ -17,6 +16,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.measureTimeMillis
 
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 @ExperimentalUnsignedTypes
 class MobFile @Throws(MobException::class) constructor(file: String, input: InputStream) {
 
@@ -24,9 +24,17 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
     val filePath: Path = Paths.get(file)
     val backupFilePath: Path =
         filePath.resolveSibling("${FileNameUtils.getBaseName(filePath.fileName.toString())}-backup.mob")
-    private val blocks = ArrayList<Block>()
+    val blocks: MutableList<Block> = ArrayList()
     lateinit var type: MobType
-    private val scriptBlock: ScriptBlock?
+
+    val scriptBlock: ScriptBlock?
+        get() = getBlock()
+    val diplomacyBlock: DiplomacyBlock?
+        get() = getBlock()
+    val worldSetBlock: WorldSetBlock?
+        get() = getBlock()
+    val objectsBlock: ObjectsBlock?
+        get() = getBlock()
 
     init {
         val readTime = measureTimeMillis {
@@ -36,8 +44,6 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
         }
         logger.info("Mob {} read in {} milliseconds", filePath, readTime)
         logger.info("Mob size without AIGraph: {}", mainBlockSize())
-
-        scriptBlock = blocks.find { b -> b is ScriptBlock } as ScriptBlock?
     }
 
     @Throws(MobException::class)
@@ -45,6 +51,8 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
 
     @Throws(MobException::class)
     constructor(file: String, bytes: ByteArray) : this(file, ByteArrayInputStream(bytes))
+
+    private inline fun <reified T : Block> getBlock(): T? = blocks.find { b -> b is T } as T?
 
     private fun readFromStream(it: StreamInput) {
         try {
@@ -55,7 +63,7 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
                     throw MobException(this)
                 }
             }
-        } catch (e : EOFException){
+        } catch (e: EOFException) {
             logger.fatal(e)
             throw MobException("Unexpected end of file when reading $filePath. Aborting", e)
         }
@@ -85,14 +93,6 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
 
     fun accept(visitor: MobVisitor) {
         blocks.forEach { x -> x.accept(visitor) }
-    }
-
-    fun getScriptBytes(): ByteArray {
-        return scriptBlock?.script?.toByteArray(eiCharset) ?: ByteArray(0)
-    }
-
-    fun setScriptBytes(bytes: ByteArray) {
-        scriptBlock?.script = bytes.toString(eiCharset)
     }
 
     fun backup() {
