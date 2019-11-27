@@ -86,3 +86,4 @@ $RECYCLE.BIN/
 src/main/gen
 
 .kotlintest
+gradle-local.properties

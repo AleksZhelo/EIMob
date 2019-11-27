@@ -9,6 +9,7 @@ import com.alekseyzhelo.eimob.util.readUInt
 import loggersoft.kotlin.streams.StreamInput
 import loggersoft.kotlin.streams.toBinaryBufferedStream
 import java.io.ByteArrayInputStream
+import java.io.EOFException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.charset.Charset
@@ -46,12 +47,17 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
     constructor(file: String, bytes: ByteArray) : this(file, ByteArrayInputStream(bytes))
 
     private fun readFromStream(it: StreamInput) {
-        val fileSignature = it.readUInt()
-        if (fileSignature != SIG_MOB) {
-            "Not a mob-file: $filePath. Aborting.".run {
-                logger.fatal(this)
-                throw MobException(this)
+        try {
+            val fileSignature = it.readUInt()
+            if (fileSignature != SIG_MOB) {
+                "Not a mob-file: $filePath. Aborting.".run {
+                    logger.fatal(this)
+                    throw MobException(this)
+                }
             }
+        } catch (e : EOFException){
+            logger.fatal(e)
+            throw MobException("Unexpected end of file when reading $filePath. Aborting", e)
         }
 
         it.readUInt() // read and discard the main block size

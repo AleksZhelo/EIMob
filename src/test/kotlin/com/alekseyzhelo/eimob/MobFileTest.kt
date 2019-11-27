@@ -1,6 +1,9 @@
 package com.alekseyzhelo.eimob
 
+import com.alekseyzhelo.BuildConfig
+import io.kotlintest.matchers.withClue
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -27,9 +30,30 @@ internal class MobFileTest : StringSpec() {
             testMob("/gz1g.mob", 12983)
         }
 
+        "should fail properly on non-mob" {
+            val resource = this.javaClass.getResource("/canyon_script_bytes")
+            shouldThrow<MobException> {
+                MobFile(File(resource.path).absolutePath)
+            }
+        }
+
+        "should fail properly on empty file" {
+            val resource = this.javaClass.getResource("/empty")
+            shouldThrow<MobException> {
+                MobFile(File(resource.path).absolutePath)
+            }
+        }
+
         "l: all original mobs should load and serialize with same sizes" {
-            val eiMobsPath = "C:\\Program Files (x86)\\Проклятые Земли\\Maps"
-            val inputDir = Paths.get(eiMobsPath).toFile()
+            val eiMobsPath = Paths.get(BuildConfig.EI_PATH).resolve("Maps")
+            val inputDir = eiMobsPath.toFile()
+            withClue(
+                "A correct Evil Islands installation path should be specified in " +
+                        "gradle-local.properties property ei_path, " +
+                        "example: ei_path=C:\\\\\\\\Program Files (x86)\\\\\\\\Проклятые Земли"
+            ) {
+                inputDir.exists() shouldBe true
+            }
             inputDir.list { _: File, name: String -> name.endsWith(".mob") }?.forEach {
                 val file = MobFile(inputDir.resolve(it).absolutePath)
                 testSerialization(inputDir.resolve(it).readBytes(), file, strict = false)
