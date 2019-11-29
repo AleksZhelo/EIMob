@@ -72,7 +72,7 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
         type = MobType.fromSignature(it.readLong())
 
         while (!it.isEof) {
-            val newBlock = Block.createBlock(it)
+            val newBlock = Block.createTopLevelBlock(it)
             blocks.add(newBlock)
             logger.info("Read block of type {}, size {}", newBlock::class.simpleName, newBlock.getSize())
         }

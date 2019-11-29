@@ -3,8 +3,6 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.blocks.Block
-import com.alekseyzhelo.eimob.blocks.ObjectsBlock.Companion.SIG_UNIT
 import com.alekseyzhelo.eimob.blocks.UnknownBlock
 import com.alekseyzhelo.eimob.util.binaryStream
 import loggersoft.kotlin.streams.StreamOutput
@@ -13,7 +11,7 @@ import loggersoft.kotlin.streams.StreamOutput
 @ExperimentalUnsignedTypes
 class MobUnit(
     bytes: ByteArray
-) : Block, MobObjectDataHolder() {
+) : MobObjectBase() {
 
     override val signature: UInt = SIG_UNIT
     override var nPlayer: Byte = super.nPlayer
@@ -58,12 +56,12 @@ class MobUnit(
             with(readMobEntry()) {
                 testSignature(
                     first,
-                    SIG_STATS,
+                    SIG_UNIT_STATS,
                     "Unexpected data in unit stats block, aborting!"
                 )
-                stats = MobUnitStats(first, second)
+                stats = MobUnitStats(second)
             }
-            readObjectData(this)
+            readCommonObjectData(this)
             while (!isEof) {
                 val (signature, blockBytes) = readMobEntry()
                 testSignature(
@@ -79,7 +77,7 @@ class MobUnit(
     override fun getSize(): Int = 8 * entryHeaderSize + 1 + prototype.length +
             armors.mobEntrySize() + weapons.mobEntrySize() + spells.mobEntrySize() +
             quickItems.mobEntrySize() + questItems.mobEntrySize() + stats.getSize() +
-            getObjectDataSize() + behaviours.fold(0, { acc, block -> acc + block.getSize() })
+            getCommonObjectDataSize() + behaviours.fold(0, { acc, block -> acc + block.getSize() })
 
     override fun serialize(out: StreamOutput) {
         with(out) {
@@ -92,13 +90,51 @@ class MobUnit(
             writeMobStringArray(SIG_QUICK_ITEMS, quickItems)
             writeMobStringArray(SIG_QUEST_ITEMS, questItems)
             stats.serialize(this)
-            writeObjectData(this)
+            writeCommonObjectData(this)
             behaviours.forEach { it.serialize(this) }
         }
     }
 
     override fun accept(visitor: MobVisitor) {
         visitor.visitMobUnit(this)
+    }
+
+    override fun clone(): MobUnit = MobUnit(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MobUnit
+
+        if (nPlayer != other.nPlayer) return false
+        if (useMobInfo != other.useMobInfo) return false
+        if (prototype != other.prototype) return false
+        if (!armors.contentEquals(other.armors)) return false
+        if (!weapons.contentEquals(other.weapons)) return false
+        if (!spells.contentEquals(other.spells)) return false
+        if (!quickItems.contentEquals(other.quickItems)) return false
+        if (!questItems.contentEquals(other.questItems)) return false
+        if (stats != other.stats) return false
+        if (behaviours != other.behaviours) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + nPlayer
+        result = 31 * result + useMobInfo.hashCode()
+        result = 31 * result + prototype.hashCode()
+        result = 31 * result + armors.contentHashCode()
+        result = 31 * result + weapons.contentHashCode()
+        result = 31 * result + spells.contentHashCode()
+        result = 31 * result + quickItems.contentHashCode()
+        result = 31 * result + questItems.contentHashCode()
+        result = 31 * result + stats.hashCode()
+        result = 31 * result + behaviours.hashCode()
+        return result
     }
 
     companion object {
@@ -109,7 +145,7 @@ class MobUnit(
         const val SIG_SPELLS = 0xBBBB0007u
         const val SIG_QUICK_ITEMS = 0xBBBB0006u
         const val SIG_QUEST_ITEMS = 0xBBBB0005u
-        const val SIG_STATS = 0xBBBB0004u
+        const val SIG_UNIT_STATS = 0xBBBB0004u
         const val SIG_UNIT_BEHAVIOUR = 0xBBBC0000u
     }
 }

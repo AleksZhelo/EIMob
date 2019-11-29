@@ -11,9 +11,9 @@ import loggersoft.kotlin.streams.StreamOutput
 @Suppress("MemberVisibilityCanBePrivate")
 @ExperimentalUnsignedTypes
 class MobUnitStats(
-    override val signature: UInt,
     bytes: ByteArray
 ) : Block {
+    override val signature: UInt = MobUnit.SIG_UNIT_STATS
     var hpMaxMaybe: Int
     var hpCurrentMaybe: Int
     var manaMaxMaybe: Int
@@ -166,7 +166,113 @@ class MobUnitStats(
     }
 
     override fun accept(visitor: MobVisitor) {
-        throw MobException("Should not be called");
+        throw MobException("Should not be called")
+    }
+
+    override fun clone(): MobUnitStats = MobUnitStats(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as MobUnitStats
+
+        if (hpMaxMaybe != other.hpMaxMaybe) return false
+        if (hpCurrentMaybe != other.hpCurrentMaybe) return false
+        if (manaMaxMaybe != other.manaMaxMaybe) return false
+        if (manaCurrentMaybe != other.manaCurrentMaybe) return false
+        if (unknownFloat1 != other.unknownFloat1) return false
+        if (unknownFloat2 != other.unknownFloat2) return false
+        if (runSpeed != other.runSpeed) return false
+        if (walkSpeed != other.walkSpeed) return false
+        if (sneakSpeed != other.sneakSpeed) return false
+        if (crawlSpeed != other.crawlSpeed) return false
+        if (unknownAlmostZero1 != other.unknownAlmostZero1) return false
+        if (skillsPeripheralMaybe != other.skillsPeripheralMaybe) return false
+        if (unknownAlmostZero2 != other.unknownAlmostZero2) return false
+        if (attackDistanceMaybe != other.attackDistanceMaybe) return false
+        if (unknown8Bytes != other.unknown8Bytes) return false
+        if (toHit != other.toHit) return false
+        if (parry != other.parry) return false
+        if (weaponWeightMaybe != other.weaponWeightMaybe) return false
+        if (damageNubMaybe != other.damageNubMaybe) return false
+        if (damageMaxMaybe != other.damageMaxMaybe) return false
+        if (attackPiercing != other.attackPiercing) return false
+        if (attackSlashing != other.attackSlashing) return false
+        if (attackBludgeoning != other.attackBludgeoning) return false
+        if (attackThermal != other.attackThermal) return false
+        if (attackChemical != other.attackChemical) return false
+        if (attackElectric != other.attackElectric) return false
+        if (attackGeneral != other.attackGeneral) return false
+        if (absorbtion != other.absorbtion) return false
+        if (sensesSight != other.sensesSight) return false
+        if (sensesInfra != other.sensesInfra) return false
+        if (sensesSenseLife != other.sensesSenseLife) return false
+        if (sensesHearing != other.sensesHearing) return false
+        if (sensesSmell != other.sensesSmell) return false
+        if (sensesTracking != other.sensesTracking) return false
+        if (detectionSight != other.detectionSight) return false
+        if (detectionInfra != other.detectionInfra) return false
+        if (detectionSenseLife != other.detectionSenseLife) return false
+        if (detectionHearing != other.detectionHearing) return false
+        if (detectionSmell != other.detectionSmell) return false
+        if (detectionTracking != other.detectionTracking) return false
+        if (skillsGeneralMaybe != other.skillsGeneralMaybe) return false
+        if (skillsStealMaybe != other.skillsStealMaybe) return false
+        if (skillsTameMaybe != other.skillsTameMaybe) return false
+        if (unknownByte != other.unknownByte) return false
+        if (unknown4Bytes != other.unknown4Bytes) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = hpMaxMaybe
+        result = 31 * result + hpCurrentMaybe
+        result = 31 * result + manaMaxMaybe
+        result = 31 * result + manaCurrentMaybe
+        result = 31 * result + unknownFloat1.hashCode()
+        result = 31 * result + unknownFloat2.hashCode()
+        result = 31 * result + runSpeed.hashCode()
+        result = 31 * result + walkSpeed.hashCode()
+        result = 31 * result + sneakSpeed.hashCode()
+        result = 31 * result + crawlSpeed.hashCode()
+        result = 31 * result + unknownAlmostZero1.hashCode()
+        result = 31 * result + skillsPeripheralMaybe.hashCode()
+        result = 31 * result + unknownAlmostZero2.hashCode()
+        result = 31 * result + attackDistanceMaybe.hashCode()
+        result = 31 * result + unknown8Bytes.hashCode()
+        result = 31 * result + toHit.hashCode()
+        result = 31 * result + parry.hashCode()
+        result = 31 * result + weaponWeightMaybe.hashCode()
+        result = 31 * result + damageNubMaybe.hashCode()
+        result = 31 * result + damageMaxMaybe.hashCode()
+        result = 31 * result + attackPiercing
+        result = 31 * result + attackSlashing
+        result = 31 * result + attackBludgeoning
+        result = 31 * result + attackThermal
+        result = 31 * result + attackChemical
+        result = 31 * result + attackElectric
+        result = 31 * result + attackGeneral
+        result = 31 * result + absorbtion
+        result = 31 * result + sensesSight.hashCode()
+        result = 31 * result + sensesInfra.hashCode()
+        result = 31 * result + sensesSenseLife.hashCode()
+        result = 31 * result + sensesHearing.hashCode()
+        result = 31 * result + sensesSmell.hashCode()
+        result = 31 * result + sensesTracking.hashCode()
+        result = 31 * result + detectionSight.hashCode()
+        result = 31 * result + detectionInfra.hashCode()
+        result = 31 * result + detectionSenseLife.hashCode()
+        result = 31 * result + detectionHearing.hashCode()
+        result = 31 * result + detectionSmell.hashCode()
+        result = 31 * result + detectionTracking.hashCode()
+        result = 31 * result + skillsGeneralMaybe
+        result = 31 * result + skillsStealMaybe
+        result = 31 * result + skillsTameMaybe
+        result = 31 * result + unknownByte
+        result = 31 * result + unknown4Bytes
+        return result
     }
 
     override fun toString(): String {
@@ -187,6 +293,4 @@ class MobUnitStats(
                 "skillsGeneralMaybe=$skillsGeneralMaybe, skillsStealMaybe=$skillsStealMaybe,\n" +
                 "skillsTameMaybe=$skillsTameMaybe, unknownByte=$unknownByte, unknown4Bytes=$unknown4Bytes)"
     }
-
-
 }

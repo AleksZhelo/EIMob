@@ -1,8 +1,6 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.blocks.Block
-import com.alekseyzhelo.eimob.blocks.ObjectsBlock.Companion.SIG_TRAP
 import com.alekseyzhelo.eimob.util.Float2
 import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
@@ -12,7 +10,7 @@ import loggersoft.kotlin.streams.StreamOutput
 @ExperimentalUnsignedTypes
 class MobTrap(
     bytes: ByteArray
-) : Block, MobObjectDataHolder() {
+) : MobObjectBase() {
 
     override val signature: UInt = SIG_TRAP
     var unknownTrapInt: Int
@@ -36,12 +34,12 @@ class MobTrap(
                 SIG_TARGETS, "Failed to read targets in MobTrap block",
                 "Unexpected signature in targets array"
             ).toCollection(ArrayList())
-            readObjectData(this)
+            readCommonObjectData(this)
         }
     }
 
     override fun getSize(): Int = entryHeaderSize * 7 + 4 + trapSpell.length + 4 + 1 +
-            areas.toTypedArray().mobEntrySize() + targets.toTypedArray().mobEntrySize() + getObjectDataSize()
+            areas.toTypedArray().mobEntrySize() + targets.toTypedArray().mobEntrySize() + getCommonObjectDataSize()
 
     override fun serialize(out: StreamOutput) {
         with(out) {
@@ -52,12 +50,42 @@ class MobTrap(
             writeMobBoolean(SIG_CAST_ONCE, castOnce)
             writeMobFloat3Array(SIG_AREAS, areas.toTypedArray())
             writeMobFloat2Array(SIG_TARGETS, targets.toTypedArray())
-            writeObjectData(this)
+            writeCommonObjectData(this)
         }
     }
 
     override fun accept(visitor: MobVisitor) {
         visitor.visitMobTrap(this)
+    }
+
+    override fun clone(): MobTrap = MobTrap(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MobTrap
+
+        if (unknownTrapInt != other.unknownTrapInt) return false
+        if (trapSpell != other.trapSpell) return false
+        if (castInterval != other.castInterval) return false
+        if (castOnce != other.castOnce) return false
+        if (areas != other.areas) return false
+        if (targets != other.targets) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + unknownTrapInt
+        result = 31 * result + trapSpell.hashCode()
+        result = 31 * result + castInterval
+        result = 31 * result + castOnce.hashCode()
+        result = 31 * result + areas.hashCode()
+        result = 31 * result + targets.hashCode()
+        return result
     }
 
     companion object {

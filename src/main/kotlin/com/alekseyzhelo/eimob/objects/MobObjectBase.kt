@@ -8,7 +8,7 @@ import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
 @ExperimentalUnsignedTypes
-open class MobObjectDataHolder {
+abstract class MobObjectBase : MobMapEntity() {
 
     var bodyParts: Array<String> = Array(0) { "" }
     open var nPlayer: Byte = (-1).toByte()
@@ -16,22 +16,12 @@ open class MobObjectDataHolder {
             require(value in -1..31) { "Bad player number: $value" }
             field = value
         }
-    var id: Int = -1
-        set(value) {
-            if (field == -1){
-                field = value
-            } else {
-                throw MobException("Should not reassign object ID")
-            }
-        }
     var objType: Int = -1
-    var name: String = ""
     var modelName: String = ""
     var parentTemplate: String = ""
     var primaryTexture: String = ""
     var secondaryTexture: String = ""
     var unknownStr: String = ""
-    var location: Float3 = Float3(-1f, -1f, -1f)
     var orientation: Float4 = Float4(-1f, -1f, -1f, -1f)
     var isQuestUnit: Boolean = false
     var showShadow: Boolean = false
@@ -39,12 +29,12 @@ open class MobObjectDataHolder {
     var questInfo: String = ""
     var bodyConstitution: Float3 = Float3(-1f, -1f, -1f)
 
-    fun getObjectDataSize() = 17 * entryHeaderSize + bodyParts.mobEntrySize() + 1 + 4 + 4 +
+    fun getCommonObjectDataSize() = 17 * entryHeaderSize + bodyParts.mobEntrySize() + 1 + 4 + 4 +
             name.length + modelName.length + parentTemplate.length +
             primaryTexture.length + secondaryTexture.length +
             unknownStr.length + 12 + 16 + 1 + 1 + 4 + questInfo.length + 12
 
-    protected fun readObjectData(input: StreamInput) {
+    protected fun readCommonObjectData(input: StreamInput) {
         with(input) {
             bodyParts = readMobStringArray(
                 SIG_BODY_PARTS, "Failed to read body parts in object block",
@@ -69,7 +59,7 @@ open class MobObjectDataHolder {
         }
     }
 
-    protected fun writeObjectData(out: StreamOutput) {
+    protected fun writeCommonObjectData(out: StreamOutput) {
         with(out) {
             writeMobStringArray(SIG_BODY_PARTS, bodyParts)
             writeMobByte(SIG_N_PLAYER, nPlayer)
@@ -81,7 +71,7 @@ open class MobObjectDataHolder {
             writeMobString(SIG_PRIMARY_TEXTURE, primaryTexture)
             writeMobString(SIG_SECONDARY_TEXTURE, secondaryTexture)
             writeMobString(SIG_UNKNOWN_STR, unknownStr)
-            writeMobFloat3(SIG_LOCATION, this@MobObjectDataHolder.location)
+            writeMobFloat3(SIG_LOCATION, this@MobObjectBase.location)
             writeMobFloat4(SIG_ORIENTATION, orientation)
             writeMobBoolean(SIG_IS_QUEST_UNIT, isQuestUnit)
             writeMobBoolean(SIG_SHOW_SHADOW, showShadow)
@@ -89,6 +79,50 @@ open class MobObjectDataHolder {
             writeMobString(SIG_QUEST_INFO, questInfo)
             writeMobFloat3(SIG_BODY_CONSTITUTION, bodyConstitution)
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MobObjectBase
+
+        if (!bodyParts.contentEquals(other.bodyParts)) return false
+        if (nPlayer != other.nPlayer) return false
+        if (objType != other.objType) return false
+        if (modelName != other.modelName) return false
+        if (parentTemplate != other.parentTemplate) return false
+        if (primaryTexture != other.primaryTexture) return false
+        if (secondaryTexture != other.secondaryTexture) return false
+        if (unknownStr != other.unknownStr) return false
+        if (orientation != other.orientation) return false
+        if (isQuestUnit != other.isQuestUnit) return false
+        if (showShadow != other.showShadow) return false
+        if (unknownInt != other.unknownInt) return false
+        if (questInfo != other.questInfo) return false
+        if (bodyConstitution != other.bodyConstitution) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + bodyParts.contentHashCode()
+        result = 31 * result + nPlayer
+        result = 31 * result + objType
+        result = 31 * result + modelName.hashCode()
+        result = 31 * result + parentTemplate.hashCode()
+        result = 31 * result + primaryTexture.hashCode()
+        result = 31 * result + secondaryTexture.hashCode()
+        result = 31 * result + unknownStr.hashCode()
+        result = 31 * result + orientation.hashCode()
+        result = 31 * result + isQuestUnit.hashCode()
+        result = 31 * result + showShadow.hashCode()
+        result = 31 * result + unknownInt
+        result = 31 * result + questInfo.hashCode()
+        result = 31 * result + bodyConstitution.hashCode()
+        return result
     }
 
     companion object {

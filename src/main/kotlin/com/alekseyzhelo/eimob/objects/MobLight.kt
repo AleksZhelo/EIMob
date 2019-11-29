@@ -1,10 +1,7 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.blocks.Block
-import com.alekseyzhelo.eimob.blocks.ObjectsBlock.Companion.SIG_LIGHT
 import com.alekseyzhelo.eimob.util.Color
-import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
 import loggersoft.kotlin.streams.StreamOutput
 
@@ -12,15 +9,12 @@ import loggersoft.kotlin.streams.StreamOutput
 @ExperimentalUnsignedTypes
 class MobLight(
     bytes: ByteArray
-) : Block {
+) : MobMapEntity() {
 
     override val signature: UInt = SIG_LIGHT
-    val id: Int
     var showShadow: Boolean
-    val location: Float3
     val color: Color
     var particleSize: Float
-    var name: String
     var comment: String
 
     init {
@@ -52,6 +46,30 @@ class MobLight(
 
     override fun accept(visitor: MobVisitor) {
         visitor.visitMobLight(this)
+    }
+
+    override fun clone(): MobLight = MobLight(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as MobLight
+
+        if (showShadow != other.showShadow) return false
+        if (color != other.color) return false
+        if (particleSize != other.particleSize) return false
+        if (comment != other.comment) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = showShadow.hashCode()
+        result = 31 * result + color.hashCode()
+        result = 31 * result + particleSize.hashCode()
+        result = 31 * result + comment.hashCode()
+        return result
     }
 
     companion object {

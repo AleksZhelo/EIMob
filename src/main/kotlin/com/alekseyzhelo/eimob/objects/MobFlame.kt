@@ -1,8 +1,7 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.blocks.Block
-import com.alekseyzhelo.eimob.blocks.ObjectsBlock.Companion.SIG_FLAME
+import com.alekseyzhelo.eimob.blocks.WorldSetBlock
 import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
 import loggersoft.kotlin.streams.StreamOutput
@@ -11,10 +10,10 @@ import loggersoft.kotlin.streams.StreamOutput
 @ExperimentalUnsignedTypes
 class MobFlame(
     bytes: ByteArray
-) : Block, MobObjectDataHolder() {
+) : MobObjectBase() {
 
     override val signature: UInt = SIG_FLAME
-    val flameOffset: Float3 // TODO: correct?
+    var flameOffset: Float3 // TODO: correct?
     var intensity: Float
     var sound: String
 
@@ -23,11 +22,11 @@ class MobFlame(
             flameOffset = readMobFloat3(SIG_FLAME_OFFSET, "Failed to read flame offset in MobFlame block")
             intensity = readMobFloat(SIG_INTENSITY, "Failed to read flame intensity in MobFlame block")
             sound = readMobString(SIG_SOUND, "Failed to read flame sound in MobFlame block")
-            readObjectData(this)
+            readCommonObjectData(this)
         }
     }
 
-    override fun getSize(): Int = 4 * entryHeaderSize + 12 + 4 + sound.length + getObjectDataSize()
+    override fun getSize(): Int = 4 * entryHeaderSize + 12 + 4 + sound.length + getCommonObjectDataSize()
 
     override fun serialize(out: StreamOutput) {
         with(out) {
@@ -35,12 +34,36 @@ class MobFlame(
             writeMobFloat3(SIG_FLAME_OFFSET, flameOffset)
             writeMobFloat(SIG_INTENSITY, intensity)
             writeMobString(SIG_SOUND, sound)
-            writeObjectData(this)
+            writeCommonObjectData(this)
         }
     }
 
     override fun accept(visitor: MobVisitor) {
         visitor.visitMobFlame(this)
+    }
+
+    override fun clone(): MobFlame = MobFlame(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MobFlame
+
+        if (flameOffset != other.flameOffset) return false
+        if (intensity != other.intensity) return false
+        if (sound != other.sound) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + flameOffset.hashCode()
+        result = 31 * result + intensity.hashCode()
+        result = 31 * result + sound.hashCode()
+        return result
     }
 
     companion object {

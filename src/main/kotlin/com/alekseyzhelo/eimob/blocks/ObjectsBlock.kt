@@ -5,59 +5,79 @@ import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_OBJECTS
 import com.alekseyzhelo.eimob.entryHeaderSize
 import com.alekseyzhelo.eimob.objects.*
-import com.alekseyzhelo.eimob.readMobEntry
+import com.alekseyzhelo.eimob.util.IdRegistry
 import com.alekseyzhelo.eimob.util.binaryStream
 import loggersoft.kotlin.streams.StreamOutput
+import java.util.*
+import kotlin.collections.ArrayList
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 @ExperimentalUnsignedTypes
+// TODO: entity addition/removal tests
 class ObjectsBlock(
     bytes: ByteArray
 ) : Block {
 
     override val signature: UInt = SIG_OBJECTS
-    // TODO: one list of <Block> instead, units/etc as views of that?
-    val units: ArrayList<MobUnit> = ArrayList()
-    val objects: ArrayList<MobObject> = ArrayList()
-    val levers: ArrayList<MobLever> = ArrayList()
-    val traps: ArrayList<MobTrap> = ArrayList()
-    val flames: ArrayList<MobFlame> = ArrayList()
-    val lights: ArrayList<MobLight> = ArrayList()
-    val sounds: ArrayList<MobSound> = ArrayList()
-    val particles: ArrayList<MobParticle> = ArrayList()
+    private val registry by lazy { IdRegistry(children) }
+    private val children = ArrayList<MobMapEntity>()
+    private val unitsInner = ArrayList<MobUnit>()
+    private val objectsInner = ArrayList<MobObject>()
+    private val leversInner = ArrayList<MobLever>()
+    private val trapsInner = ArrayList<MobTrap>()
+    private val flamesInner = ArrayList<MobFlame>()
+    private val lightsInner = ArrayList<MobLight>()
+    private val soundsInner = ArrayList<MobSound>()
+    private val particlesInner = ArrayList<MobParticle>()
+
+    val units: List<MobUnit> = Collections.unmodifiableList(unitsInner)
+    val objects: List<MobObject> = Collections.unmodifiableList(objectsInner)
+    val levers: List<MobLever> = Collections.unmodifiableList(leversInner)
+    val traps: List<MobTrap> = Collections.unmodifiableList(trapsInner)
+    val flames: List<MobFlame> = Collections.unmodifiableList(flamesInner)
+    val lights: List<MobLight> = Collections.unmodifiableList(lightsInner)
+    val sounds: List<MobSound> = Collections.unmodifiableList(soundsInner)
+    val particles: List<MobParticle> = Collections.unmodifiableList(particlesInner)
 
     init {
         with(bytes.binaryStream()) {
             while (!isEof) {
-                val (subSignature, blockBytes) = readMobEntry()
-                when (subSignature) {
-                    SIG_UNIT -> units.add(MobUnit(blockBytes))
-                    SIG_OBJECT -> objects.add(MobObject(blockBytes))
-                    SIG_LEVER -> levers.add(MobLever(blockBytes))
-                    SIG_TRAP -> traps.add(MobTrap(blockBytes))
-                    SIG_FLAME -> flames.add(MobFlame(blockBytes))
-                    SIG_LIGHT -> lights.add(MobLight(blockBytes))
-                    SIG_SOUND -> sounds.add(MobSound(blockBytes))
-                    SIG_PARTICLE -> particles.add(MobParticle(blockBytes))
-                    else -> throw MobException("Unexpected data in objects block, aborting!")
-                }
+                addChild(MobMapEntity.createMapEntity(this))
             }
         }
     }
 
-    override fun getSize(): Int = entryHeaderSize +
-            units.fold(0, { acc, block -> acc + block.getSize() }) +
-            objects.fold(0, { acc, block -> acc + block.getSize() }) +
-            levers.fold(0, { acc, block -> acc + block.getSize() }) +
-            traps.fold(0, { acc, block -> acc + block.getSize() }) +
-            flames.fold(0, { acc, block -> acc + block.getSize() }) +
-            lights.fold(0, { acc, block -> acc + block.getSize() }) +
-            sounds.fold(0, { acc, block -> acc + block.getSize() }) +
-            particles.fold(0, { acc, block -> acc + block.getSize() })
+    fun getEntityById(id: Int) = registry.getEntityById(id)
+
+    /**
+     * Adds a copy of the given entity to this block.
+     * @return the entity copy that was added to the block, possibly with updated ID.
+     */
+    fun addEntity(entity: MobMapEntity): MobMapEntity {
+        return addChild(entity.clone(), true)
+    }
+
+    /**
+     * @return whether the entity with the given ID was found among the block's children and removed.
+     */
+    fun removeEntityById(id: Int): Boolean {
+        return getEntityById(id)?.let {
+            removeEntity(it)
+        } ?: false
+    }
+
+    /**
+     * @return whether the given entity was found among the block's children and removed.
+     */
+    fun removeEntity(entity: MobMapEntity): Boolean = removeChild(entity)
+
+    fun objectCount() = children.size
+
+    override fun getSize(): Int = entryHeaderSize + children.fold(0, { acc, block -> acc + block.getSize() })
 
     override fun serialize(out: StreamOutput) {
         super.serialize(out)
-        applyToChildren { x -> x.serialize(out) }
+        children.forEach { x -> x.serialize(out) }
     }
 
     override fun accept(visitor: MobVisitor) {
@@ -65,28 +85,61 @@ class ObjectsBlock(
     }
 
     override fun acceptChildren(visitor: MobVisitor) {
-        applyToChildren { x -> x.accept(visitor) }
+        children.forEach { x -> x.accept(visitor) }
     }
 
-    private inline fun applyToChildren(f: (x: Block) -> Unit) {
-        units.forEach { x -> f(x) }
-        objects.forEach { x -> f(x) }
-        levers.forEach { x -> f(x) }
-        traps.forEach { x -> f(x) }
-        flames.forEach { x -> f(x) }
-        lights.forEach { x -> f(x) }
-        sounds.forEach { x -> f(x) }
-        particles.forEach { x -> f(x) }
+    override fun clone(): ObjectsBlock = ObjectsBlock(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ObjectsBlock
+
+        if (children != other.children) return false
+
+        return true
     }
 
-    companion object {
-        const val SIG_UNIT = 0xBBBB0000u
-        const val SIG_OBJECT = 0x0000B001u
-        const val SIG_LEVER = 0xBBAC0000u
-        const val SIG_TRAP = 0xBBAB0000u
-        const val SIG_FLAME = 0xBBBF0000u
-        const val SIG_LIGHT = 0x0000AA01u
-        const val SIG_SOUND = 0x0000CC01u
-        const val SIG_PARTICLE = 0x0000DD01u
+    override fun hashCode(): Int {
+        return children.hashCode()
+    }
+
+    private fun addChild(child: MobMapEntity, register: Boolean = false): MobMapEntity {
+        when (child) {
+            is MobFlame -> flamesInner.add(child)
+            is MobLever -> leversInner.add(child)
+            is MobLight -> lightsInner.add(child)
+            is MobObject -> objectsInner.add(child)
+            is MobParticle -> particlesInner.add(child)
+            is MobSound -> soundsInner.add(child)
+            is MobTrap -> trapsInner.add(child)
+            is MobUnit -> unitsInner.add(child)
+            else -> throw MobException("Unsupported object type: ${child.javaClass}")
+        }
+        children.add(child)
+        if (register) {
+            registry.registerNewEntity(child)
+        }
+        return child
+    }
+
+    private fun removeChild(child: MobMapEntity): Boolean {
+        val result = children.remove(child)
+        if (result) {
+            when (child) {
+                is MobFlame -> flamesInner.remove(child)
+                is MobLever -> leversInner.remove(child)
+                is MobLight -> lightsInner.remove(child)
+                is MobObject -> objectsInner.remove(child)
+                is MobParticle -> particlesInner.remove(child)
+                is MobSound -> soundsInner.remove(child)
+                is MobTrap -> trapsInner.remove(child)
+                is MobUnit -> unitsInner.remove(child)
+                else -> throw MobException("Unsupported object type: ${child.javaClass}")
+            }
+            registry.registerDeleteEntity(child)
+        }
+        return result
     }
 }

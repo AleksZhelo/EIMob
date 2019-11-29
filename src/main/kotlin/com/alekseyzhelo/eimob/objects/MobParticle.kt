@@ -1,9 +1,6 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.blocks.Block
-import com.alekseyzhelo.eimob.blocks.ObjectsBlock.Companion.SIG_PARTICLE
-import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
 import loggersoft.kotlin.streams.StreamOutput
 
@@ -11,12 +8,9 @@ import loggersoft.kotlin.streams.StreamOutput
 @ExperimentalUnsignedTypes
 class MobParticle(
     bytes: ByteArray
-) : Block {
+) : MobMapEntity() {
 
     override val signature: UInt = SIG_PARTICLE
-    val id: Int
-    val location: Float3
-    var name: String
     var comment: String
     var type: Int
     var scale: Float
@@ -48,6 +42,30 @@ class MobParticle(
 
     override fun accept(visitor: MobVisitor) {
         visitor.visitMobParticle(this)
+    }
+
+    override fun clone(): MobParticle = MobParticle(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MobParticle
+
+        if (comment != other.comment) return false
+        if (type != other.type) return false
+        if (scale != other.scale) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + comment.hashCode()
+        result = 31 * result + type
+        result = 31 * result + scale.hashCode()
+        return result
     }
 
     companion object {

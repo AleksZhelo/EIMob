@@ -1,9 +1,6 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.blocks.Block
-import com.alekseyzhelo.eimob.blocks.ObjectsBlock.Companion.SIG_SOUND
-import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
 import loggersoft.kotlin.streams.StreamOutput
 
@@ -11,15 +8,12 @@ import loggersoft.kotlin.streams.StreamOutput
 @ExperimentalUnsignedTypes
 class MobSound(
     bytes: ByteArray
-) : Block {
+) : MobMapEntity() {
 
     override val signature: UInt = SIG_SOUND
     val soundResources: ArrayList<String>
-    val id: Int
-    val location: Float3
     var range: Int
     var range2: Int
-    var name: String
     var comment: String
     var volumeMin: Int
     var volumeMax: Int
@@ -45,7 +39,6 @@ class MobSound(
         }
     }
 
-
     override fun getSize(): Int = 12 * entryHeaderSize + soundResources.toTypedArray().mobEntrySize() +
             4 + 12 + 4 + 4 + name.length + comment.length + 4 + 4 + 1 + 1
 
@@ -68,6 +61,40 @@ class MobSound(
 
     override fun accept(visitor: MobVisitor) {
         visitor.visitMobSound(this)
+    }
+
+    override fun clone(): MobSound = MobSound(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MobSound
+
+        if (soundResources != other.soundResources) return false
+        if (range != other.range) return false
+        if (range2 != other.range2) return false
+        if (comment != other.comment) return false
+        if (volumeMin != other.volumeMin) return false
+        if (volumeMax != other.volumeMax) return false
+        if (isAmbient != other.isAmbient) return false
+        if (isMusic != other.isMusic) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + soundResources.hashCode()
+        result = 31 * result + range
+        result = 31 * result + range2
+        result = 31 * result + comment.hashCode()
+        result = 31 * result + volumeMin
+        result = 31 * result + volumeMax
+        result = 31 * result + isAmbient.hashCode()
+        result = 31 * result + isMusic.hashCode()
+        return result
     }
 
     companion object {

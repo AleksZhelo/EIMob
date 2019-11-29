@@ -35,6 +35,8 @@ class EncryptedScriptBlock(
         visitor.visitScriptBlock(this)
     }
 
+    override fun clone(): EncryptedScriptBlock = EncryptedScriptBlock(toByteArray())
+
     private fun decryptScript(data: ByteArray, fromIndex: Int = 0): String {
         return crypt(data, fromIndex).decodeMobString()
     }
@@ -51,6 +53,24 @@ class EncryptedScriptBlock(
             key += (((((key * 13) shl 4) + key) shl 8) - key) * 4 + 2531011
             result[i] = result[i] xor ((key shr 16).toByte())
         }
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as EncryptedScriptBlock
+
+        if (scriptKey != other.scriptKey) return false
+        if (script != other.script) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = scriptKey
+        result = 31 * result + script.hashCode()
         return result
     }
 

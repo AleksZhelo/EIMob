@@ -2,20 +2,25 @@ package com.alekseyzhelo.eimob
 
 import com.alekseyzhelo.eimob.blocks.*
 import com.alekseyzhelo.eimob.objects.*
+import com.alekseyzhelo.eimob.objects.MobMapEntity
 
+@Suppress("MemberVisibilityCanBePrivate")
 @ExperimentalUnsignedTypes
-interface MobVisitor {
-    fun visitDiplomacyBlock(value: DiplomacyBlock)
-    fun visitObjectsBlock(value: ObjectsBlock)
-    fun visitScriptBlock(value: ScriptBlock)
-    fun visitUnknownBlock(value: UnknownBlock)
-    fun visitWorldSetBlock(value: WorldSetBlock)
-    fun visitMobFlame(value: MobFlame)
-    fun visitMobLever(value: MobLever)
-    fun visitMobLight(value: MobLight)
-    fun visitMobObject(value: MobObject)
-    fun visitMobParticle(value: MobParticle)
-    fun visitMobSound(value: MobSound)
-    fun visitMobTrap(value: MobTrap)
-    fun visitMobUnit(value: MobUnit)
+open class MobVisitor {
+    // @formatter:off
+    open fun visitDiplomacyBlock(value: DiplomacyBlock) {}
+    open fun visitObjectsBlock(value: ObjectsBlock) {}
+    open fun visitScriptBlock(value: ScriptBlock) {}
+    open fun visitUnknownBlock(value: UnknownBlock) {}
+    open fun visitWorldSetBlock(value: WorldSetBlock) {}
+    open fun visitMobMapEntity(value: MobMapEntity) {}
+    open fun visitMobFlame(value: MobFlame) { visitMobMapEntity(value) }
+    open fun visitMobLever(value: MobLever) { visitMobMapEntity(value) }
+    open fun visitMobLight(value: MobLight) { visitMobMapEntity(value) }
+    open fun visitMobObject(value: MobObject) { visitMobMapEntity(value) }
+    open fun visitMobParticle(value: MobParticle) { visitMobMapEntity(value) }
+    open fun visitMobSound(value: MobSound) { visitMobMapEntity(value) }
+    open fun visitMobTrap(value: MobTrap) { visitMobMapEntity(value) }
+    open fun visitMobUnit(value: MobUnit) { visitMobMapEntity(value) }
+    // @formatter:on
 }

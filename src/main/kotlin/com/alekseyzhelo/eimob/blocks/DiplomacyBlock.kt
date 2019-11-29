@@ -48,6 +48,26 @@ class DiplomacyBlock(
         visitor.visitDiplomacyBlock(this)
     }
 
+    override fun clone(): DiplomacyBlock = DiplomacyBlock(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DiplomacyBlock
+
+        if (!diplomacyMatrix.contentDeepEquals(other.diplomacyMatrix)) return false
+        if (!playerNames.contentEquals(other.playerNames)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = diplomacyMatrix.contentDeepHashCode()
+        result = 31 * result + playerNames.contentHashCode()
+        return result
+    }
+
     companion object {
         const val SIG_DIPLOMACY_MATRIX = 0xDDDDDDD2u
         const val SIG_PLAYER_NAMES = 0xDDDDDDD3u

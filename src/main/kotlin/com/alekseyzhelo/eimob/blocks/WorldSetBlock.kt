@@ -14,7 +14,7 @@ class WorldSetBlock(
 
     override val signature: UInt = SIG_WORLD_SET
     // TODO: are coordinates constrained between -1.0 and 1.0?  | yes
-    val windDirection: Float3
+    var windDirection: Float3
     var windStrength: Float = 0.0f
         set(value) {
             require((value in 0.0..1.0)) { "Wind strength must be between 0.0 and 1.0" }
@@ -61,6 +61,32 @@ class WorldSetBlock(
 
     override fun accept(visitor: MobVisitor) {
         visitor.visitWorldSetBlock(this)
+    }
+
+    override fun clone(): WorldSetBlock = WorldSetBlock(toByteArray())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as WorldSetBlock
+
+        if (windDirection != other.windDirection) return false
+        if (windStrength != other.windStrength) return false
+        if (worldTime != other.worldTime) return false
+        if (worldAmbient != other.worldAmbient) return false
+        if (worldSunlight != other.worldSunlight) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = windDirection.hashCode()
+        result = 31 * result + windStrength.hashCode()
+        result = 31 * result + worldTime.hashCode()
+        result = 31 * result + worldAmbient.hashCode()
+        result = 31 * result + worldSunlight.hashCode()
+        return result
     }
 
     companion object {

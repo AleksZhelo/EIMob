@@ -5,15 +5,29 @@ import com.alekseyzhelo.eimob.readMobEntry
 import com.alekseyzhelo.eimob.writeMobEntryHeader
 import loggersoft.kotlin.streams.StreamInput
 import loggersoft.kotlin.streams.StreamOutput
+import loggersoft.kotlin.streams.toBinaryBufferedStream
+import java.io.ByteArrayOutputStream
 
 @ExperimentalUnsignedTypes
-interface Block {
+interface Block : Cloneable {
     val signature: UInt
 
+    /**
+     * @return block size in bytes.
+     */
     fun getSize(): Int
     fun serialize(out: StreamOutput) = out.writeMobEntryHeader(signature, getSize())
     fun accept(visitor: MobVisitor)
     fun acceptChildren(visitor: MobVisitor) {}
+    public override fun clone() : Block
+
+    fun toByteArray(): ByteArray {
+        return ByteArrayOutputStream(getSize()).use {
+            serialize(it.toBinaryBufferedStream())
+            it.flush()
+            it.toByteArray()
+        }
+    }
 
     companion object {
         const val SIG_SCRIPT = 0xACCEECCBu
@@ -23,7 +37,7 @@ interface Block {
         const val SIG_OBJECTS = 0x0000B000u
         const val SIG_AIGRAPH = 0x31415926u
 
-        fun createBlock(input: StreamInput): Block {
+        fun createTopLevelBlock(input: StreamInput): Block {
             val (signature, bytes) = input.readMobEntry()
             return when (signature) {
                 SIG_SCRIPT -> EncryptedScriptBlock(bytes)

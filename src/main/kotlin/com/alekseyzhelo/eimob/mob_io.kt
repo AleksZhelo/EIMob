@@ -8,10 +8,6 @@ import loggersoft.kotlin.streams.StreamOutput
 import java.io.IOException
 import kotlin.math.sqrt
 
-class MobException(message: String, cause: Exception?) : Exception(message, cause) {
-    constructor(message: String) : this(message, null)
-}
-
 const val entryHeaderSize = 8
 
 fun Array<String>.totalLength(): Int = this.fold(0, { acc, x -> acc + x.length })

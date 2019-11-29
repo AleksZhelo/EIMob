@@ -17,16 +17,16 @@ internal class MobFileTest : StringSpec() {
             true shouldBe true
         }
 
-        "susl_canyon_of_death should load and serialize" {
+        "susl_canyon_of_death should load with correct size and serialize" {
             testMob("/susl_canyon_of_death.mob", 471287)
         }
 
-        "zone2 should load and serialize" {
+        "zone2 should load with correct size and serialize" {
             // size is one byte less than the original EI file due to MobSurgeon stripping empty last line
             testMob("/zone2.mob", 236385)
         }
 
-        "gz1g should load and serialize" {
+        "gz1g should load with correct size and serialize" {
             testMob("/gz1g.mob", 12983)
         }
 
@@ -44,7 +44,7 @@ internal class MobFileTest : StringSpec() {
             }
         }
 
-        "l: all original mobs should load and serialize with same sizes" {
+        "l: all original mobs should load and serialize" {
             val eiMobsPath = Paths.get(BuildConfig.EI_PATH).resolve("Maps")
             val inputDir = eiMobsPath.toFile()
             withClue(
@@ -56,7 +56,7 @@ internal class MobFileTest : StringSpec() {
             }
             inputDir.list { _: File, name: String -> name.endsWith(".mob") }?.forEach {
                 val file = MobFile(inputDir.resolve(it).absolutePath)
-                testSerialization(inputDir.resolve(it).readBytes(), file, strict = false)
+                testSerialization(inputDir.resolve(it).readBytes(), file, strict = true)
             }
         }
     }
