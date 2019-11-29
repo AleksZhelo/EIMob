@@ -28,4 +28,6 @@ class MobObject(
     }
 
     override fun clone(): MobObject = MobObject(toByteArray())
+
+    // TODO: equals works properly?
 }

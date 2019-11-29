@@ -14,53 +14,51 @@ fun main(args: Array<String>) {
         inputFile.list { _: File, name: String -> name.endsWith(".mob") }?.forEach {
             val file = MobFile(inputFile.resolve(it).absolutePath)
             println(file.filePath)
-            println(file.objectsBlock?.registry?.gaps?.size)
-//            file.accept(object : MobVisitor() {
-//                override fun visitObjectsBlock(value: ObjectsBlock) {
-//                    value.acceptChildren(this)
-//                }
-//
-//                override fun visitWorldSetBlock(value: WorldSetBlock) {
-////                    println("Wind direction: ${value.windDirection}")
-////                    println("Wind strength: ${value.windStrength}")
-////                    println("Time: ${value.worldTime}")
-////                    println("Ambient: ${value.worldAmbient}")
-////                    println("Sunlight: ${value.worldSunlight}")
-//                }
-//
-//                override fun visitMobFlame(value: MobFlame) {
-//                }
-//
-//                override fun visitMobLever(value: MobLever) {
-//                }
-//
-//                override fun visitMobLight(value: MobLight) {
-////                    println("Light ${value.name} with id ${value.id}, color: ${value.color}")
-//                }
-//
-//                override fun visitMobObject(value: MobObject) {
-////                    if (value.unknownStr != "none") {
-////                        println("Object ${value.name} with id ${value.id}, int: ${value.unknownInt}")
-////                    }
-//                }
-//
-//                override fun visitMobParticle(value: MobParticle) {
-//                }
-//
-//                override fun visitMobSound(value: MobSound) {
-//                }
-//
-//                override fun visitMobTrap(value: MobTrap) {
-//                }
-//
-//                override fun visitMobUnit(value: MobUnit) {
-//                    println("Unit ${value.name} with id ${value.id}, stats: ${value.stats}")
-//                }
-//            });
+            file.accept(object : MobVisitor() {
+                override fun visitObjectsBlock(value: ObjectsBlock) {
+                    value.acceptChildren(this)
+                }
+
+                override fun visitWorldSetBlock(value: WorldSetBlock) {
+//                    println("Wind direction: ${value.windDirection}")
+//                    println("Wind strength: ${value.windStrength}")
+//                    println("Time: ${value.worldTime}")
+//                    println("Ambient: ${value.worldAmbient}")
+//                    println("Sunlight: ${value.worldSunlight}")
+                }
+
+                override fun visitMobFlame(value: MobFlame) {
+                }
+
+                override fun visitMobLever(value: MobLever) {
+                }
+
+                override fun visitMobLight(value: MobLight) {
+//                    println("Light ${value.name} with id ${value.id}, color: ${value.color}")
+                }
+
+                override fun visitMobObject(value: MobObject) {
+//                    if (value.unknownStr != "none") {
+//                        println("Object ${value.name} with id ${value.id}, int: ${value.unknownInt}")
+//                    }
+                }
+
+                override fun visitMobParticle(value: MobParticle) {
+                }
+
+                override fun visitMobSound(value: MobSound) {
+                }
+
+                override fun visitMobTrap(value: MobTrap) {
+                }
+
+                override fun visitMobUnit(value: MobUnit) {
+                    println("Unit ${value.name} with id ${value.id}, stats: ${value.stats}")
+                }
+            });
         }
     } else {
         val mob = MobFile(path)
-        print(mob.objectsBlock?.registry)
         print("test")
     }
 }
