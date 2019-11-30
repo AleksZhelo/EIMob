@@ -2,9 +2,10 @@ package com.alekseyzhelo.eimob.blocks
 
 import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_SCRIPT_PLAIN_TEXT
-import com.alekseyzhelo.eimob.entryHeaderSize
-import com.alekseyzhelo.eimob.encodeMobString
 import com.alekseyzhelo.eimob.decodeMobString
+import com.alekseyzhelo.eimob.encodeMobString
+import com.alekseyzhelo.eimob.entryHeaderSize
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @ExperimentalUnsignedTypes
@@ -28,7 +29,7 @@ class PlainTextScriptBlock(
         visitor.visitScriptBlock(this)
     }
 
-    override fun clone(): PlainTextScriptBlock = PlainTextScriptBlock(toByteArray())
+    override fun clone(): PlainTextScriptBlock = PlainTextScriptBlock(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

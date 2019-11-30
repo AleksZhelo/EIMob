@@ -31,14 +31,13 @@ internal class IdRegistry(entities: Collection<MobMapEntity>) {
         if (ids.isNotEmpty()) {
             maxId = ids[ids.size - 1]
         }
-        println(ids)
-        // TODO: start from zero
+        // TODO: test gaps
         gaps = calculateSortedSequenceGaps(ids)
-        println(gaps)
         map = initIdToEntityMap(entities)
+        logger.info("Id registry initialized")
     }
 
-    fun getEntityById(id: Int) = map[id]
+    internal fun getEntityById(id: Int) = map[id]
 
     internal fun registerNewEntity(entity: MobMapEntity) = addWithUniqueId(map, entity)
 
@@ -59,7 +58,7 @@ internal class IdRegistry(entities: Collection<MobMapEntity>) {
         target[entity.id] = entity
     }
 
-    internal fun takeNextId(forEntity: MobMapEntity): Int {
+    internal fun takeNextId(): Int {
         return if (gaps.isEmpty()) {
             ++maxId
         } else {

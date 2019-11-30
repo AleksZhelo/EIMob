@@ -1,9 +1,9 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.blocks.WorldSetBlock
 import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -42,7 +42,7 @@ class MobFlame(
         visitor.visitMobFlame(this)
     }
 
-    override fun clone(): MobFlame = MobFlame(toByteArray())
+    override fun clone(): MobFlame = MobFlame(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -4,6 +4,7 @@ import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_WORLD_SET
 import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -63,7 +64,7 @@ class WorldSetBlock(
         visitor.visitWorldSetBlock(this)
     }
 
-    override fun clone(): WorldSetBlock = WorldSetBlock(toByteArray())
+    override fun clone(): WorldSetBlock = WorldSetBlock(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -3,6 +3,7 @@ package com.alekseyzhelo.eimob.objects
 import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.util.Color
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -48,7 +49,7 @@ class MobLight(
         visitor.visitMobLight(this)
     }
 
-    override fun clone(): MobLight = MobLight(toByteArray())
+    override fun clone(): MobLight = MobLight(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

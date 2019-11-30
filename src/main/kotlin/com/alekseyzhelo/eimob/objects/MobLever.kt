@@ -2,6 +2,7 @@ package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -50,7 +51,7 @@ class MobLever(
         visitor.visitMobLever(this)
     }
 
-    override fun clone(): MobLever = MobLever(toByteArray())
+    override fun clone(): MobLever = MobLever(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

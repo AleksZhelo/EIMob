@@ -5,8 +5,6 @@ import com.alekseyzhelo.eimob.readMobEntry
 import com.alekseyzhelo.eimob.writeMobEntryHeader
 import loggersoft.kotlin.streams.StreamInput
 import loggersoft.kotlin.streams.StreamOutput
-import loggersoft.kotlin.streams.toBinaryBufferedStream
-import java.io.ByteArrayOutputStream
 
 @ExperimentalUnsignedTypes
 interface Block : Cloneable {
@@ -20,14 +18,6 @@ interface Block : Cloneable {
     fun accept(visitor: MobVisitor)
     fun acceptChildren(visitor: MobVisitor) {}
     public override fun clone() : Block
-
-    fun toByteArray(): ByteArray {
-        return ByteArrayOutputStream(getSize()).use {
-            serialize(it.toBinaryBufferedStream())
-            it.flush()
-            it.toByteArray()
-        }
-    }
 
     companion object {
         const val SIG_SCRIPT = 0xACCEECCBu

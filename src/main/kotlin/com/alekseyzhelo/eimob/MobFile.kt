@@ -14,6 +14,8 @@ import java.io.OutputStream
 import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
@@ -21,10 +23,12 @@ import kotlin.system.measureTimeMillis
 class MobFile @Throws(MobException::class) constructor(file: String, input: InputStream) {
 
     private val logger by LoggerDelegate()
+    private val blocksInner: MutableList<Block> = ArrayList()
+    private val listeners: MutableList<MobListener> = ArrayList()
     val filePath: Path = Paths.get(file)
     val backupFilePath: Path =
         filePath.resolveSibling("${FileNameUtils.getBaseName(filePath.fileName.toString())}-backup.mob")
-    val blocks: MutableList<Block> = ArrayList()
+    val blocks: List<Block> = Collections.unmodifiableList(blocksInner)
     lateinit var type: MobType
 
     val scriptBlock: ScriptBlock?
@@ -73,7 +77,7 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
 
         while (!it.isEof) {
             val newBlock = Block.createTopLevelBlock(it)
-            blocks.add(newBlock)
+            addBlock(newBlock)
             logger.info("Read block of type {}, size {}", newBlock::class.simpleName, newBlock.getSize())
         }
     }
@@ -94,6 +98,27 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
     fun accept(visitor: MobVisitor) {
         blocks.forEach { x -> x.accept(visitor) }
     }
+
+    fun addBlock(block: Block, position: Int = -1) {
+        if (position < 0) {
+            blocksInner.add(block)
+        } else {
+            blocksInner.add(position, block)
+        }
+        listeners.forEach { it.onBlockAdded(block) }
+    }
+
+    fun removeBlock(block: Block): Boolean {
+        val result = blocksInner.remove(block)
+        if (result) {
+            listeners.forEach { it.onBlockRemoved(block) }
+        }
+        return result
+    }
+
+    fun addListener(listener: MobListener) = listeners.add(listener)
+
+    fun removeListener(listener: MobListener) = listeners.remove(listener)
 
     fun backup() {
         val backupFile = backupFilePath.toFile()

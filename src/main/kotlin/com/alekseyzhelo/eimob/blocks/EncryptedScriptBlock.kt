@@ -2,11 +2,12 @@ package com.alekseyzhelo.eimob.blocks
 
 import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_SCRIPT
-import com.alekseyzhelo.eimob.entryHeaderSize
-import com.alekseyzhelo.eimob.encodeMobString
 import com.alekseyzhelo.eimob.decodeMobString
+import com.alekseyzhelo.eimob.encodeMobString
+import com.alekseyzhelo.eimob.entryHeaderSize
 import com.alekseyzhelo.eimob.util.binaryStream
 import com.alekseyzhelo.eimob.util.intToByteArray
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 import kotlin.experimental.xor
 
@@ -35,7 +36,7 @@ class EncryptedScriptBlock(
         visitor.visitScriptBlock(this)
     }
 
-    override fun clone(): EncryptedScriptBlock = EncryptedScriptBlock(toByteArray())
+    override fun clone(): EncryptedScriptBlock = EncryptedScriptBlock(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

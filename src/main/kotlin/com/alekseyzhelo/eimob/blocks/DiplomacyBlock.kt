@@ -4,6 +4,7 @@ import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_DIPLOMACY
 import com.alekseyzhelo.eimob.util.binaryStream
 import com.alekseyzhelo.eimob.util.mobEntrySize
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -48,7 +49,7 @@ class DiplomacyBlock(
         visitor.visitDiplomacyBlock(this)
     }
 
-    override fun clone(): DiplomacyBlock = DiplomacyBlock(toByteArray())
+    override fun clone(): DiplomacyBlock = DiplomacyBlock(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

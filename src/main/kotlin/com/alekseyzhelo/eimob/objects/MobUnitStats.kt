@@ -5,6 +5,7 @@ import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.blocks.Block
 import com.alekseyzhelo.eimob.entryHeaderSize
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 // TODO: determine field meanings
@@ -169,7 +170,7 @@ class MobUnitStats(
         throw MobException("Should not be called")
     }
 
-    override fun clone(): MobUnitStats = MobUnitStats(toByteArray())
+    override fun clone(): MobUnitStats = MobUnitStats(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

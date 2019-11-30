@@ -1,6 +1,7 @@
 package com.alekseyzhelo.eimob
 
-import com.alekseyzhelo.eimob.blocks.*
+import com.alekseyzhelo.eimob.blocks.ObjectsBlock
+import com.alekseyzhelo.eimob.blocks.WorldSetBlock
 import com.alekseyzhelo.eimob.objects.*
 import java.io.File
 import java.nio.file.Paths
@@ -55,7 +56,7 @@ fun main(args: Array<String>) {
                 override fun visitMobUnit(value: MobUnit) {
                     println("Unit ${value.name} with id ${value.id}, stats: ${value.stats}")
                 }
-            });
+            })
         }
     } else {
         val mob = MobFile(path)

@@ -2,7 +2,6 @@ package com.alekseyzhelo.eimob
 
 import com.alekseyzhelo.eimob.blocks.*
 import com.alekseyzhelo.eimob.objects.*
-import com.alekseyzhelo.eimob.objects.MobMapEntity
 
 @Suppress("MemberVisibilityCanBePrivate")
 @ExperimentalUnsignedTypes

@@ -2,6 +2,7 @@ package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -44,7 +45,7 @@ class MobParticle(
         visitor.visitMobParticle(this)
     }
 
-    override fun clone(): MobParticle = MobParticle(toByteArray())
+    override fun clone(): MobParticle = MobParticle(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

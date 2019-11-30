@@ -2,14 +2,10 @@ package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.MobException
 import com.alekseyzhelo.eimob.blocks.Block
-import com.alekseyzhelo.eimob.blocks.ObjectsBlock
 import com.alekseyzhelo.eimob.readMobEntry
 import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.IdRegistry
 import loggersoft.kotlin.streams.StreamInput
-import loggersoft.kotlin.streams.toBinaryBufferedStream
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 
 @ExperimentalUnsignedTypes
 // TODO: documentation
@@ -21,7 +17,7 @@ abstract class MobMapEntity internal constructor() : Block {
     var location: Float3 = Float3(-1f, -1f, -1f)
 
     internal fun fixId(registry: IdRegistry) {
-        id = registry.takeNextId(this)
+        id = registry.takeNextId()
     }
 
     abstract override fun clone() : MobMapEntity

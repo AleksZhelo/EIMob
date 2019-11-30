@@ -5,6 +5,7 @@ package com.alekseyzhelo.eimob.objects
 import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.blocks.UnknownBlock
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -99,7 +100,7 @@ class MobUnit(
         visitor.visitMobUnit(this)
     }
 
-    override fun clone(): MobUnit = MobUnit(toByteArray())
+    override fun clone(): MobUnit = MobUnit(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

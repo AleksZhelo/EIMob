@@ -3,6 +3,7 @@ package com.alekseyzhelo.eimob.objects
 import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.entryHeaderSize
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @ExperimentalUnsignedTypes
@@ -27,7 +28,7 @@ class MobObject(
         visitor.visitMobObject(this)
     }
 
-    override fun clone(): MobObject = MobObject(toByteArray())
+    override fun clone(): MobObject = MobObject(toByteArraySkipHeader())
 
     // TODO: equals works properly?
 }

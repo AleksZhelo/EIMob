@@ -4,6 +4,7 @@ import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.util.Float2
 import com.alekseyzhelo.eimob.util.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -58,7 +59,7 @@ class MobTrap(
         visitor.visitMobTrap(this)
     }
 
-    override fun clone(): MobTrap = MobTrap(toByteArray())
+    override fun clone(): MobTrap = MobTrap(toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

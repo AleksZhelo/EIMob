@@ -2,6 +2,7 @@ package com.alekseyzhelo.eimob.blocks
 
 import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.entryHeaderSize
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
 @ExperimentalUnsignedTypes
@@ -23,7 +24,7 @@ class UnknownBlock(
         visitor.visitUnknownBlock(this)
     }
 
-    override fun clone(): UnknownBlock = UnknownBlock(signature, toByteArray())
+    override fun clone(): UnknownBlock = UnknownBlock(signature, toByteArraySkipHeader())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,24 +1,27 @@
 package com.alekseyzhelo.eimob.blocks
 
 import com.alekseyzhelo.eimob.MobException
+import com.alekseyzhelo.eimob.MobObjectsListener
 import com.alekseyzhelo.eimob.MobVisitor
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_OBJECTS
 import com.alekseyzhelo.eimob.entryHeaderSize
 import com.alekseyzhelo.eimob.objects.*
 import com.alekseyzhelo.eimob.util.IdRegistry
 import com.alekseyzhelo.eimob.util.binaryStream
+import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 import java.util.*
 import kotlin.collections.ArrayList
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 @ExperimentalUnsignedTypes
-// TODO: entity addition/removal tests
+// TODO: entity addition/removal tests; listeners
 class ObjectsBlock(
     bytes: ByteArray
 ) : Block {
 
     override val signature: UInt = SIG_OBJECTS
+    private val listeners: MutableList<MobObjectsListener> = ArrayList()
     private val registry by lazy { IdRegistry(children) }
     private val children = ArrayList<MobMapEntity>()
     private val unitsInner = ArrayList<MobUnit>()
@@ -42,9 +45,17 @@ class ObjectsBlock(
     init {
         with(bytes.binaryStream()) {
             while (!isEof) {
-                addChild(MobMapEntity.createMapEntity(this))
+                addChild(MobMapEntity.createMapEntity(this), register = false, fireListeners = false)
             }
         }
+    }
+
+    /**
+     * Force non-unique object ID reassignment
+     * (otherwise deferred until the first of any of the getEntityById, add or remove entity calls).
+     */
+    fun verifyIds(): Unit {
+        registry.toString()
     }
 
     fun getEntityById(id: Int) = registry.getEntityById(id)
@@ -54,7 +65,7 @@ class ObjectsBlock(
      * @return the entity copy that was added to the block, possibly with updated ID.
      */
     fun addEntity(entity: MobMapEntity): MobMapEntity {
-        return addChild(entity.clone(), true)
+        return addChild(entity.clone(), register = true, fireListeners = true)
     }
 
     /**
@@ -88,7 +99,11 @@ class ObjectsBlock(
         children.forEach { x -> x.accept(visitor) }
     }
 
-    override fun clone(): ObjectsBlock = ObjectsBlock(toByteArray())
+    override fun clone(): ObjectsBlock = ObjectsBlock(toByteArraySkipHeader())
+
+    fun addListener(listener: MobObjectsListener) = listeners.add(listener)
+
+    fun removeListener(listener: MobObjectsListener) = listeners.remove(listener)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -105,7 +120,7 @@ class ObjectsBlock(
         return children.hashCode()
     }
 
-    private fun addChild(child: MobMapEntity, register: Boolean = false): MobMapEntity {
+    private fun addChild(child: MobMapEntity, register: Boolean = true, fireListeners: Boolean = true): MobMapEntity {
         when (child) {
             is MobFlame -> flamesInner.add(child)
             is MobLever -> leversInner.add(child)
@@ -117,9 +132,12 @@ class ObjectsBlock(
             is MobUnit -> unitsInner.add(child)
             else -> throw MobException("Unsupported object type: ${child.javaClass}")
         }
-        children.add(child)
         if (register) {
             registry.registerNewEntity(child)
+        }
+        children.add(child)
+        if (fireListeners) {
+            listeners.forEach { it.onEntityAdded(child) }
         }
         return child
     }
@@ -139,6 +157,7 @@ class ObjectsBlock(
                 else -> throw MobException("Unsupported object type: ${child.javaClass}")
             }
             registry.registerDeleteEntity(child)
+            listeners.forEach { it.onEntityRemoved(child) }
         }
         return result
     }
