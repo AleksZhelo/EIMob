@@ -1,4 +1,4 @@
-package com.alekseyzhelo.eimob.util
+package com.alekseyzhelo.eimob.types
 
 fun array2dOfInt(sizeOuter: Int, sizeInner: Int): Array<IntArray> = Array(sizeOuter) { IntArray(sizeInner) }
 

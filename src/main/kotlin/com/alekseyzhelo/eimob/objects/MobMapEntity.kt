@@ -3,7 +3,7 @@ package com.alekseyzhelo.eimob.objects
 import com.alekseyzhelo.eimob.MobException
 import com.alekseyzhelo.eimob.blocks.Block
 import com.alekseyzhelo.eimob.readMobEntry
-import com.alekseyzhelo.eimob.util.Float3
+import com.alekseyzhelo.eimob.types.Float3
 import com.alekseyzhelo.eimob.util.IdRegistry
 import loggersoft.kotlin.streams.StreamInput
 
@@ -20,7 +20,7 @@ abstract class MobMapEntity internal constructor() : Block {
         id = registry.takeNextId()
     }
 
-    abstract override fun clone() : MobMapEntity
+    abstract override fun clone(): MobMapEntity
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

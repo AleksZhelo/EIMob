@@ -1,24 +1,9 @@
 package com.alekseyzhelo.eimob.util
 
+import com.alekseyzhelo.eimob.types.Float3
 import loggersoft.kotlin.streams.*
-
-data class Float2(var x: Float, var y: Float) {
-    override fun toString(): String {
-        return "x=$x, y=$y"
-    }
-}
-
-data class Float3(var x: Float, var y: Float, var z: Float) {
-    override fun toString(): String {
-        return "x=$x, y=$y, z=$z"
-    }
-}
-
-data class Float4(var x: Float, var y: Float, var z: Float, var w: Float) {
-    override fun toString(): String {
-        return "x=$x, y=$y, z=$z, w=$w"
-    }
-}
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @ExperimentalUnsignedTypes
 fun StreamInput.readUInt(byteOrder: ByteOrder = defaultByteOrder) = this.readInt(byteOrder).toUInt()
@@ -48,3 +33,6 @@ fun intToByteArray(value: Int): ByteArray {
         )
     }
 }
+
+fun norm3(x: Double, y: Double, z: Double) = sqrt(x.pow(2.0) + y.pow(2.0) + z.pow(2.0))
+fun Float3.norm() = norm3(x.toDouble(), y.toDouble(), z.toDouble())

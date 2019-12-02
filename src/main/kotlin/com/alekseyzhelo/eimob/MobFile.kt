@@ -28,6 +28,9 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
     val filePath: Path = Paths.get(file)
     val backupFilePath: Path =
         filePath.resolveSibling("${FileNameUtils.getBaseName(filePath.fileName.toString())}-backup.mob")
+    /**
+     * Modifiable via addBlock/removeBlock methods.
+     */
     val blocks: List<Block> = Collections.unmodifiableList(blocksInner)
     lateinit var type: MobType
 
@@ -99,6 +102,9 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
         blocks.forEach { x -> x.accept(visitor) }
     }
 
+    /**
+     * @param position pass a negative value to add at the end of the block list.
+     */
     fun addBlock(block: Block, position: Int = -1) {
         if (position < 0) {
             blocksInner.add(block)
@@ -108,6 +114,9 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
         listeners.forEach { it.onBlockAdded(block) }
     }
 
+    /**
+     * @return `true` if the block has been successfully removed; `false` if it was not present in the mob file.
+     */
     fun removeBlock(block: Block): Boolean {
         val result = blocksInner.remove(block)
         if (result) {

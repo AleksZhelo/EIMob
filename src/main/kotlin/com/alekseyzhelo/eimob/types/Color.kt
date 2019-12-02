@@ -1,7 +1,8 @@
-package com.alekseyzhelo.eimob.util
+package com.alekseyzhelo.eimob.types
 
 @Suppress("MemberVisibilityCanBePrivate")
 class Color(r: Float, g: Float, b: Float) {
+
     var r: Float = r
         set(value) {
             require(value in 0.0..1.0) { "Bad color value $value" }

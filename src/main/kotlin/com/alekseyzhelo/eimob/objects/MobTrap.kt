@@ -1,8 +1,8 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.util.Float2
-import com.alekseyzhelo.eimob.util.Float3
+import com.alekseyzhelo.eimob.types.Float2
+import com.alekseyzhelo.eimob.types.Float3
 import com.alekseyzhelo.eimob.util.binaryStream
 import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput

@@ -15,7 +15,6 @@ import kotlin.collections.ArrayList
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 @ExperimentalUnsignedTypes
-// TODO: entity addition/removal tests; listeners
 class ObjectsBlock(
     bytes: ByteArray
 ) : Block {

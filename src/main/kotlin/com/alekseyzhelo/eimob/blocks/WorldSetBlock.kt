@@ -2,7 +2,7 @@ package com.alekseyzhelo.eimob.blocks
 
 import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_WORLD_SET
-import com.alekseyzhelo.eimob.util.Float3
+import com.alekseyzhelo.eimob.types.Unit3
 import com.alekseyzhelo.eimob.util.binaryStream
 import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
@@ -14,8 +14,7 @@ class WorldSetBlock(
 ) : Block {
 
     override val signature: UInt = SIG_WORLD_SET
-    // TODO: are coordinates constrained between -1.0 and 1.0?  | yes
-    var windDirection: Float3
+    var windDirection: Unit3
     var windStrength: Float = 0.0f
         set(value) {
             require((value in 0.0..1.0)) { "Wind strength must be between 0.0 and 1.0" }
@@ -39,7 +38,7 @@ class WorldSetBlock(
 
     init {
         with(bytes.binaryStream()) {
-            windDirection = readMobFloat3(SIG_WIND_DIR, "Failed to read wind direction in WorldSet block")
+            windDirection = Unit3(readMobFloat3(SIG_WIND_DIR, "Failed to read wind direction in WorldSet block"))
             windStrength = readMobFloat(SIG_WIND_STR, "Failed to read wind strength in WorldSet block")
             worldTime = readMobFloat(SIG_WS_TIME, "Failed to read world time in WorldSet block")
             worldAmbient = readMobFloat(SIG_WS_AMBIENT, "Failed to read ambient ? in WorldSet block")
@@ -52,7 +51,7 @@ class WorldSetBlock(
     override fun serialize(out: StreamOutput) {
         with(out) {
             super.serialize(this)
-            writeMobFloat3(SIG_WIND_DIR, windDirection)
+            writeMobFloat3(SIG_WIND_DIR, windDirection.toFloat3())
             writeMobFloat(SIG_WIND_STR, windStrength)
             writeMobFloat(SIG_WS_TIME, worldTime)
             writeMobFloat(SIG_WS_AMBIENT, worldAmbient)

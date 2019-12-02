@@ -4,7 +4,6 @@ import com.alekseyzhelo.eimob.objects.MobMapEntity
 import java.util.*
 import kotlin.collections.HashMap
 
-
 private class Gap(var start: Int, var end: Int) {
     fun contains(id: Int) = id in start..end
 

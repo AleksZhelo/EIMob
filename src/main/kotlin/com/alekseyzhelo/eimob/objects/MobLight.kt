@@ -1,7 +1,7 @@
 package com.alekseyzhelo.eimob.objects
 
 import com.alekseyzhelo.eimob.*
-import com.alekseyzhelo.eimob.util.Color
+import com.alekseyzhelo.eimob.types.Color
 import com.alekseyzhelo.eimob.util.binaryStream
 import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
@@ -23,7 +23,12 @@ class MobLight(
             id = readMobInt(SIG_ID, "Failed to read id in MobLight block")
             showShadow = readMobBoolean(SIG_SHOW_SHADOW, "Failed to read showShadow in MobLight block")
             location = readMobFloat3(SIG_LOCATION, "Failed to read location in MobLight block")
-            color = Color(readMobFloat3(SIG_COLOR, "Failed to read color in MobLight block"))
+            color = Color(
+                readMobFloat3(
+                    SIG_COLOR,
+                    "Failed to read color in MobLight block"
+                )
+            )
             particleSize = readMobFloat(SIG_PARTICLE_SIZE, "Failed to read particleSize in MobLight block")
             name = readMobString(SIG_NAME, "Failed to read name in MobLight block")
             comment = readMobString(SIG_COMMENT, "Failed to read comment in MobLight block")

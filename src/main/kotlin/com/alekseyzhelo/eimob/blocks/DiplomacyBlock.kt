@@ -2,8 +2,8 @@ package com.alekseyzhelo.eimob.blocks
 
 import com.alekseyzhelo.eimob.*
 import com.alekseyzhelo.eimob.blocks.Block.Companion.SIG_DIPLOMACY
+import com.alekseyzhelo.eimob.types.mobEntrySize
 import com.alekseyzhelo.eimob.util.binaryStream
-import com.alekseyzhelo.eimob.util.mobEntrySize
 import com.alekseyzhelo.eimob.util.toByteArraySkipHeader
 import loggersoft.kotlin.streams.StreamOutput
 
