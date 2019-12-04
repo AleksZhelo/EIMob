@@ -42,9 +42,11 @@ class ObjectsBlock(
     val particles: List<MobParticle> = Collections.unmodifiableList(particlesInner)
 
     init {
-        with(bytes.binaryStream()) {
-            while (!isEof) {
-                addChild(MobMapEntity.createMapEntity(this), register = false, fireListeners = false)
+        if (bytes.isNotEmpty()) {
+            with(bytes.binaryStream()) {
+                while (!isEof) {
+                    addChild(MobMapEntity.createMapEntity(this), register = false, fireListeners = false)
+                }
             }
         }
     }
@@ -68,7 +70,8 @@ class ObjectsBlock(
     }
 
     /**
-     * @return whether the entity with the given ID was found among the block's children and removed.
+     * @return `true` if the entity with the given ID has been successfully removed;
+     * `false` if it was not present among the block's children.
      */
     fun removeEntityById(id: Int): Boolean {
         return getEntityById(id)?.let {
@@ -77,7 +80,8 @@ class ObjectsBlock(
     }
 
     /**
-     * @return whether the given entity was found among the block's children and removed.
+     * @return `true` if the given entity has been successfully removed;
+     * `false` if it was not present among the block's children.
      */
     fun removeEntity(entity: MobMapEntity): Boolean = removeChild(entity)
 

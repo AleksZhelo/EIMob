@@ -8,7 +8,9 @@ import com.alekseyzhelo.eimob.util.IdRegistry
 import loggersoft.kotlin.streams.StreamInput
 
 @ExperimentalUnsignedTypes
-// TODO: documentation
+/**
+ * The base class for [com.alekseyzhelo.eimob.blocks.ObjectsBlock]'s children.
+ */
 abstract class MobMapEntity internal constructor() : Block {
 
     var id: Int = -1
