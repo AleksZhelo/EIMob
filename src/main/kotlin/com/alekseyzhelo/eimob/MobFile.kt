@@ -72,16 +72,20 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
             }
         } catch (e: EOFException) {
             logger.fatal(e)
-            throw MobException("Unexpected end of file when reading $filePath. Aborting", e)
+            throw MobException("Unexpected end of file when reading $filePath. Aborting.", e)
         }
 
         it.readUInt() // read and discard the main block size
         type = MobType.fromSignature(it.readLong())
 
         while (!it.isEof) {
-            val newBlock = Block.createTopLevelBlock(it)
-            addBlock(newBlock)
-            logger.info("Read block of type {}, size {}", newBlock::class.simpleName, newBlock.getSize())
+            try {
+                val newBlock = Block.createTopLevelBlock(it)
+                addBlock(newBlock)
+                logger.info("Read block of type {}, size {}", newBlock::class.simpleName, newBlock.getSize())
+            } catch (e: Exception) {
+                throw MobException("Failed to read $filePath. Aborting.", e)
+            }
         }
     }
 

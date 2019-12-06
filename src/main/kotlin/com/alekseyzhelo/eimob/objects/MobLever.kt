@@ -13,21 +13,20 @@ class MobLever(
 
     override val signature: UInt = SIG_LEVER
     val stats: LeverStats
-    // TODO: experiment with, determine which ones are Booleans (last three?)
     var curState: Byte
-    var totalState: Byte
-    var isCycled: Byte
-    var isDoor: Byte
-    var recalcGraph: Byte
+    var numStates: Byte
+    var isCycled: Boolean
+    var isDoor: Boolean
+    var recalcGraph: Boolean
 
     init {
         with(bytes.binaryStream()) {
             stats = readMobLeverStats(SIG_LEVER_STATS, "Failed to read stats in MobLever block")
             curState = readMobByte(SIG_CUR_STATE, "Failed to read curState in MobLever block")
-            totalState = readMobByte(SIG_TOTAL_STATE, "Failed to read totalState in MobLever block")
-            isCycled = readMobByte(SIG_IS_CYCLED, "Failed to read isCycled in MobLever block")
-            isDoor = readMobByte(SIG_IS_DOOR, "Failed to read isDoor in MobLever block")
-            recalcGraph = readMobByte(SIG_RECALC_GRAPH, "Failed to read recalcGraph in MobLever block")
+            numStates = readMobByte(SIG_NUM_STATES, "Failed to read numStates in MobLever block")
+            isCycled = readMobBoolean(SIG_IS_CYCLED, "Failed to read isCycled in MobLever block")
+            isDoor = readMobBoolean(SIG_IS_DOOR, "Failed to read isDoor in MobLever block")
+            recalcGraph = readMobBoolean(SIG_RECALC_GRAPH, "Failed to read recalcGraph in MobLever block")
             readCommonObjectData(this)
         }
     }
@@ -39,10 +38,10 @@ class MobLever(
             super.serialize(this)
             writeMobLeverStats(SIG_LEVER_STATS, stats)
             writeMobByte(SIG_CUR_STATE, curState)
-            writeMobByte(SIG_TOTAL_STATE, totalState)
-            writeMobByte(SIG_IS_CYCLED, isCycled)
-            writeMobByte(SIG_IS_DOOR, isDoor)
-            writeMobByte(SIG_RECALC_GRAPH, recalcGraph)
+            writeMobByte(SIG_NUM_STATES, numStates)
+            writeMobBoolean(SIG_IS_CYCLED, isCycled)
+            writeMobBoolean(SIG_IS_DOOR, isDoor)
+            writeMobBoolean(SIG_RECALC_GRAPH, recalcGraph)
             writeCommonObjectData(this)
         }
     }
@@ -62,7 +61,7 @@ class MobLever(
 
         if (stats != other.stats) return false
         if (curState != other.curState) return false
-        if (totalState != other.totalState) return false
+        if (numStates != other.numStates) return false
         if (isCycled != other.isCycled) return false
         if (isDoor != other.isDoor) return false
         if (recalcGraph != other.recalcGraph) return false
@@ -74,17 +73,17 @@ class MobLever(
         var result = super.hashCode()
         result = 31 * result + stats.hashCode()
         result = 31 * result + curState
-        result = 31 * result + totalState
-        result = 31 * result + isCycled
-        result = 31 * result + isDoor
-        result = 31 * result + recalcGraph
+        result = 31 * result + numStates
+        result = 31 * result + isCycled.hashCode()
+        result = 31 * result + isDoor.hashCode()
+        result = 31 * result + recalcGraph.hashCode()
         return result
     }
 
     companion object {
         const val SIG_LEVER_STATS = 0xBBAC0006u
         const val SIG_CUR_STATE = 0xBBAC0002u
-        const val SIG_TOTAL_STATE = 0xBBAC0003u
+        const val SIG_NUM_STATES = 0xBBAC0003u
         const val SIG_IS_CYCLED = 0xBBAC0004u
         const val SIG_IS_DOOR = 0xBBAC0007u
         const val SIG_RECALC_GRAPH = 0xBBAC0008u

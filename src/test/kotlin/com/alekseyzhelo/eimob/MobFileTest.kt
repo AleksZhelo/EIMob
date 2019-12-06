@@ -59,6 +59,30 @@ internal class MobFileTest : StringSpec() {
                 testSerialization(inputDir.resolve(it).readBytes(), file, strict = true)
             }
         }
+
+        "l: (almost) all Lost In Astral mobs should load and serialize" {
+            val eiLAMobsPath = Paths.get(BuildConfig.EI_LA_PATH).resolve("Maps")
+            val inputDir = eiLAMobsPath.toFile()
+            withClue(
+                "A correct Evil Islands: Lost In Astral installation path should be specified in " +
+                        "gradle-local.properties property ei_la_path, " +
+                        "example: ei_la_path=C:\\\\\\\\Program Files (x86)\\\\\\\\Nival Interactive\\\\\\\\Затерянные в Астрале"
+            ) {
+                inputDir.exists() shouldBe true
+            }
+            inputDir.list { _: File, name: String -> name.endsWith(".mob") }?.forEach {
+                if (it == "bz21k.mob" || it == "zone13.mob") {
+                    // someone has been using MapED_v1.29 ;)
+                    // see https://www.gipat.ru/forum/index.php?showtopic=3789&pid=44459&st=0&#entry44459
+                    shouldThrow<MobException> {
+                        MobFile(inputDir.resolve(it).absolutePath)
+                    }
+                } else {
+                    val file = MobFile(inputDir.resolve(it).absolutePath)
+                    testSerialization(inputDir.resolve(it).readBytes(), file, strict = true)
+                }
+            }
+        }
     }
 
     private fun testMob(mobPath: String, mainBlockSize: Int) {

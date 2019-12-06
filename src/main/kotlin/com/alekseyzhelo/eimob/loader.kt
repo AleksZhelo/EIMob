@@ -32,6 +32,13 @@ fun main(args: Array<String>) {
                 }
 
                 override fun visitMobLever(value: MobLever) {
+                    println("name: ${value.name}")
+                    println("curState: ${value.curState}")
+                    println("totalState: ${value.numStates}")
+                    println("isCycled: ${value.isCycled}")
+                    println("isDoor: ${value.isDoor}")
+                    println("recalcGraph: ${value.recalcGraph}")
+                    println("")
                 }
 
                 override fun visitMobLight(value: MobLight) {
@@ -51,10 +58,11 @@ fun main(args: Array<String>) {
                 }
 
                 override fun visitMobTrap(value: MobTrap) {
+
                 }
 
                 override fun visitMobUnit(value: MobUnit) {
-                    println("Unit ${value.name} with id ${value.id}, stats: ${value.stats}")
+//                    println("Unit ${value.name} with id ${value.id}, stats: ${value.stats}")
                 }
             })
         }

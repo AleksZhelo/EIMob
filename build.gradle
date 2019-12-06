@@ -42,4 +42,5 @@ buildConfig {
     charset = 'UTF-8'
 
     buildConfigField 'String', 'EI_PATH', ei_path
+    buildConfigField 'String', 'EI_LA_PATH', ei_la_path
 }
