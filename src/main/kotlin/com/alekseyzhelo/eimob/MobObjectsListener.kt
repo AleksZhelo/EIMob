@@ -6,4 +6,5 @@ import com.alekseyzhelo.eimob.objects.MobMapEntity
 interface MobObjectsListener {
     fun onEntityAdded(entity: MobMapEntity)
     fun onEntityRemoved(entity: MobMapEntity)
+    // TODO: onEntityChanged + notifyChange in objects block (or a better place?)
 }

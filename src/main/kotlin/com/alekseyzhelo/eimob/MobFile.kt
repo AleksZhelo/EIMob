@@ -15,8 +15,9 @@ import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.system.measureTimeMillis
+import kotlin.system.measureNanoTime
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 @ExperimentalUnsignedTypes
@@ -27,7 +28,7 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
     private val listeners: MutableList<MobListener> = ArrayList()
     val filePath: Path = Paths.get(file)
     val backupFilePath: Path =
-        filePath.resolveSibling("${FileNameUtils.getBaseName(filePath.fileName.toString())}-backup.mob")
+            filePath.resolveSibling("${FileNameUtils.getBaseName(filePath.fileName.toString())}-backup.mob")
     /**
      * Modifiable via addBlock/removeBlock methods.
      */
@@ -44,12 +45,12 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
         get() = getBlock()
 
     init {
-        val readTime = measureTimeMillis {
+        val readTime = measureNanoTime {
             input.toBinaryBufferedStream().use {
                 readFromStream(it)
             }
         }
-        logger.info("Mob {} read in {} milliseconds", filePath, readTime)
+        logger.info("Mob {} read in {} milliseconds", filePath, TimeUnit.NANOSECONDS.toMillis(readTime))
         logger.info("Mob size without AIGraph: {}", mainBlockSize())
     }
 
@@ -157,7 +158,7 @@ class MobFile @Throws(MobException::class) constructor(file: String, input: Inpu
         companion object {
             private val map = values().associateBy(MobType::signature)
             fun fromSignature(type: Long): MobType = map[type] ?: throw MobException(
-                "Unknown mob type, aborting."
+                    "Unknown mob type, aborting."
             )
         }
     }
