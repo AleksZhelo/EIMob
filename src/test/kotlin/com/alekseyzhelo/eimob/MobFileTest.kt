@@ -48,7 +48,8 @@ internal class MobFileTest : StringSpec() {
             val eiMobsPath = Paths.get(BuildConfig.EI_PATH).resolve("Maps")
             val inputDir = eiMobsPath.toFile()
             withClue(
-                "A correct Evil Islands installation path should be specified in " +
+                "${inputDir.absolutePath} does not exist!\n" +
+                        "A correct Evil Islands installation path should be specified in " +
                         "gradle-local.properties property ei_path, " +
                         "example: ei_path=C:\\\\\\\\Program Files (x86)\\\\\\\\Проклятые Земли"
             ) {
@@ -64,7 +65,8 @@ internal class MobFileTest : StringSpec() {
             val eiLAMobsPath = Paths.get(BuildConfig.EI_LA_PATH).resolve("Maps")
             val inputDir = eiLAMobsPath.toFile()
             withClue(
-                "A correct Evil Islands: Lost In Astral installation path should be specified in " +
+                "${inputDir.absolutePath} does not exist!\n" +
+                        "A correct Evil Islands: Lost In Astral installation path should be specified in " +
                         "gradle-local.properties property ei_la_path, " +
                         "example: ei_la_path=C:\\\\\\\\Program Files (x86)\\\\\\\\Nival Interactive\\\\\\\\Затерянные в Астрале"
             ) {

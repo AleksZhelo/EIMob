@@ -43,8 +43,8 @@ buildConfig {
     packageName = project.group
     charset = 'UTF-8'
 
-    buildConfigField 'String', 'EI_PATH', ei_path
-    buildConfigField 'String', 'EI_LA_PATH', ei_la_path
+    buildConfigField 'String', 'EI_PATH', project.hasProperty('ei_path') ? ei_path : 'missing'
+    buildConfigField 'String', 'EI_LA_PATH', project.hasProperty('ei_la_path') ? ei_la_path : 'missing'
 }
 
 jar {
