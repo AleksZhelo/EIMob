@@ -26,6 +26,9 @@ dependencies {
     testRuntimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j18-impl', version: '2.12.1'
 }
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
